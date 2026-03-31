@@ -29,6 +29,7 @@ Before reading any source code, establish the project's context.
    - `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`,
      `build.gradle`, or equivalent manifest
    - `docs/` or `documentation/` directory index (if present)
+   - `*.md` files
 
 2. From these files, extract:
    - **Project name and stated purpose**
