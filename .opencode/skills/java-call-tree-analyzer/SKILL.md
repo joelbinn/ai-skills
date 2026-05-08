@@ -24,6 +24,10 @@ This skill provides a systematic workflow for performing a deep, recursive analy
 ### 3. Entity and External System Identification
 As you traverse the tree, maintain a log of the following:
 
+- **Method Logic/Behaviour:**
+  - Identify the specific operations performed within each method (javadoc and method body).
+  - Analyze the logic and data flow within each method.
+  - Identify any side effects or data transformations.
 - **JPA Entities:** Look for classes annotated with `@Entity`.
   - Identify which attributes are accessed.
   - Determine the operation type: **READ** (getters, query methods) or **WRITE** (setters, constructors, save methods).
@@ -32,13 +36,15 @@ As you traverse the tree, maintain a log of the following:
   - `RestTemplate` or `WebClient` usage.
   - Messaging clients (JMS, Kafka, RabbitMQ).
   - Explicit service calls to other bounded contexts or external APIs.
+  - Try to determine whether the call is just a query or a data modification.
 
 ### 4. Functional Synthesis
 - **Action:** Combine the gathered information from all levels of the call tree.
 - **Goal:** Formulate a cohesive description of the "complete" behavior of the entry point method, including side effects and data flow.
+  - Determine if the method as a Command or a Query.   
 
 ## Report Format
-The final output must be a structured report containing:
+The final output **must** be a structured report containing:
 
 ### 1. Affected Entities
 List all JPA entities encountered in the call tree.
@@ -52,5 +58,25 @@ List all external systems and the specific operations performed.
   - **Call Type:** [e.g., POST /v1/payments, GET /profile]
   - **Purpose:** [Brief description]
 
-### 3. Complete Functional Description
-A detailed narrative explaining what the method does from start to finish, incorporating the logic found in all sub-methods. Describe the data transformations, validations, and final outcomes.
+### 3. Call Tree
+A visual representation of the method call tree, 
+with each node representing a method call identifying qualified method names.
+
+Example:
+```text
+PetController.processCreationForm
+├── Owner.getPet(String, boolean) [Duplicate Check]
+├── Owner.addPet(Pet)
+└── OwnerRepository.save(Owner)
+```
+
+### 4. Complete Functional Description
+A detailed narrative explaining what the method does from start to finish, 
+incorporating the logic found in all sub-methods. 
+Describe the data transformations, validations, and final outcomes.
+Also specify if it is a Command or a Query and motivate the decision.
+
+### 5. Test assertions
+A detailed set of assertions that can be used to verify the correct 
+function of the entry point method. These shall be possible to use in 
+an automated test suite. 
